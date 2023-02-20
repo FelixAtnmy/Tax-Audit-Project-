@@ -1,17 +1,73 @@
+Imports System
 
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Audit_Tax_Final_", "Audit_Tax_Final_\Audit_Tax_Final_.vbproj", "{843E4E55-516F-4876-9603-EF9932E2D187}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|anycpu = Debug|anycpu
-		Release|anycpu = Release|anycpu
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{843E4E55-516F-4876-9603-EF9932E2D187}.Debug|anycpu.ActiveCfg = Debug|anycpu
-		{843E4E55-516F-4876-9603-EF9932E2D187}.Debug|anycpu.Build.0 = Debug|anycpu
-		{843E4E55-516F-4876-9603-EF9932E2D187}.Release|anycpu.ActiveCfg = Release|anycpu
-		{843E4E55-516F-4876-9603-EF9932E2D187}.Release|anycpu.Build.0 = Release|anycpu
-	EndGlobalSection
-EndGlobal
+Module Program
+   
+Sub Main(args as string())
+
+    Using MyReader as new Microsoft.VisualBasic.FileIO.TextFieldParser("Audit_Taxation_Project.csv")
+    MyReader.TextFieldType = Microsoft.VisualBasic.FileIO.FieldType.Delimited
+    MyReader.SetDelimiters(",")
+
+    Dim currentRow as String()
+    dim RowNum as Integer
+    dim Salary2018 as double
+    dim Salary2019 as double
+
+    RowNum = 1
+    Salary2018 = 9.87654
+    Salary2019 = 1.23456
+
+    while not MyReader.EndOfData
+
+    Try
+        currentRow = MyReader.ReadFields()
+        dim rowItemNum as Integer
+        dim currentField as String
+        rowItemNum = 0
+        for each currentField in currentRow
+            Console.WriteLine("***" & currentField) 
+            rowItemNum = rowItemNum + 1
+
+          
+            ' get the 2018 salary
+            if ((rowItemNum = 4) and (RowNum > 1)) then
+                if Double.TryParse(currentField, Salary2018) then
+                    Console.WriteLine("--converted--")                 
+                Else
+                    Console.WriteLine("** conversion failed.")                    
+                End if
+            End if
+
+            ' get the 2019 salary'
+            if ((rowItemNum = 6) and (RowNum > 1)) then
+                if Double.TryParse(currentField, Salary2019) then
+                    Console.WriteLine("--converted--")                 
+                Else
+                    Console.WriteLine("** conversion failed.")                    
+                End if
+
+                'compare the salaries. For simplicity, if salary is > $8000 from one year to the next, then audit'
+                if (Salary2019 - Salary2018 > 8000) then
+                    ' time for an audit
+
+                    Console.WriteLine("***$ Audit this bonehead $***")
+                end if
+
+            End if
+            ' right here'
+        Next
+    Catch ex as Microsoft.VisualBasic.FileIO.MalformedLineException
+        Console.WriteLine("Ooops")
+    end Try
+
+  
+    Console.WriteLine("finished row " & RowNum)
+    RowNum = RowNum + 1
+
+    End While
+
+End Using
+
+End Sub
+
+End Module
